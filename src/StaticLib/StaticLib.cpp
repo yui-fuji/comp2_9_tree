@@ -69,19 +69,81 @@ bool add(tree* t, int key, const char* value)
 	}
 
 	// Todo: t->rootの下にkeyの値の大小でleftかrightを切り替えながらpを追加する処理を実装する
+	node* cur = t->root;
 
-	return true;
+	while (true) {
+		if (key == cur->key) {
+			//上書きをする
+			memcpy(cur->value, value, strlen(value) + 1);
+			free(p);          // 生成したノードは不要
+			return true;
+		}
+		else if (key < cur->key) {
+			if (cur->left == NULL) {
+				cur->left = p;
+				return true;
+			}
+			cur = cur->left;
+		}
+		else {
+			if (cur->right == NULL) {
+				cur->right = p;
+				return true;
+			}
+			cur = cur->right;
+		}
+	}
+
 }
 
 // keyの値を見てノードを検索して、値を取得する
 const char* find(const tree* t, int key)
 {
 	// ToDo: 実装する
+	const node* cur = t->root;
+
+	while (cur != NULL) {
+		if (key == cur->key) {
+			return cur->value;
+		}
+		else if (key < cur->key) {
+			cur = cur->left;
+		}
+		else {
+			cur = cur->right;
+		}
+	}
+
 	return NULL;
+
 }
 
 // keyの小さな順にコールバック関数funcを呼び出す
 void search(const tree* t, void (*func)(const node* p))
 {
 	// ToDo: 実装する
+	
+		if (t == NULL || t->root == NULL || func == NULL) return;
+
+		const node* stack[128];   // 簡易スタックをかくほ
+		int top = 0;
+		const node* cur = t->root;
+
+		while (cur != NULL || top > 0) {
+			// 左端まで進む
+			while (cur != NULL) {
+				stack[top++] = cur;
+				cur = cur->left;
+			}
+
+			// 1つ戻る
+			cur = stack[--top];
+			func(cur);
+
+			// 右へ進む
+			cur = cur->right;
+		}
+	
+
+
 }
